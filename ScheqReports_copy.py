@@ -78,10 +78,17 @@ with pd.ExcelWriter(excel_filename, engine='openpyxl') as writer:
             df = pd.DataFrame(data)
             df.drop(columns=['_id', '__v'], errors='ignore', inplace=True)
 
+            cols = ['opName'] + [col for col in df.columns if col != 'opName']
+            df = df[cols]  # Reorder DataFrame columns
+
+            print("Columns after reordering:", df.columns.tolist())  # Verify new order
+
+            # Transpose the DataFrame
             if 'submissionDate' in df.columns:
                 df['submissionDate'] = pd.to_datetime(df['submissionDate']).dt.date
                 df.set_index('submissionDate', inplace=True)
-                df = df.T
+
+            df = df.T  # Transposing data
 
             df.to_excel(writer, sheet_name=sheet_name, index=True, startrow=4, startcol=3)
 
